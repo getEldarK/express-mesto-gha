@@ -1,8 +1,8 @@
 const express = require('express');
 const mongoose = require('mongoose');
 const bodyParser = require('body-parser');
-const users = require('./routes/users'); // импортируем роутер users.js
-const cards = require('./routes/cards'); // импортируем роутер cards.js
+const router = require('./routes/index');
+
 const { PORT = 3000 } = process.env;
 
 const app = express();
@@ -11,8 +11,8 @@ mongoose.connect('mongodb://127.0.0.1:27017/mestodb', {
   useNewUrlParser: true
 });
 
-app.use(bodyParser.json()); // для собирания JSON-формата
-app.use(bodyParser.urlencoded({ extended: true })); // для приёма веб-страниц внутри POST-запроса
+app.use(express.json()); // для собирания JSON-формата
+// app.use(bodyParser.urlencoded({ extended: true })); // для приёма веб-страниц внутри POST-запроса
 
 app.use((req, res, next) => {
   req.user = {
@@ -22,8 +22,7 @@ app.use((req, res, next) => {
   next();
 });
 
-app.use('/', users);
-app.use('/', cards);
+app.use(router);
 
 app.listen(PORT, () => {
   console.log(`Listening to port ${PORT}`);
