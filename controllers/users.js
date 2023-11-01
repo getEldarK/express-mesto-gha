@@ -16,7 +16,6 @@ module.exports.getUserById = (req, res) => {
 
 module.exports.createUser = (req, res) => {
   const { name, about, avatar } = req.body;
-  console.log(name);
 
   User.create({ name, about, avatar })
     // вернём записанные в базу данные

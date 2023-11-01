@@ -2,7 +2,7 @@ const express = require('express');
 const mongoose = require('mongoose');
 const bodyParser = require('body-parser');
 const users = require('./routes/users'); // импортируем роутер users.js
-
+const cards = require('./routes/cards'); // импортируем роутер cards.js
 const { PORT = 3000 } = process.env;
 
 const app = express();
@@ -23,6 +23,7 @@ app.use((req, res, next) => {
 });
 
 app.use('/', users);
+app.use('/', cards);
 
 app.listen(PORT, () => {
   console.log(`Listening to port ${PORT}`);
