@@ -19,7 +19,7 @@ const getCards = (req, res) => {
     .populate(['owner', 'likes'])
     .then((cards) => res.send(cards))
     .catch((err) => res.status(INTERNAL_SERVER_ERROR_CODE)
-    .send({ message: `Произошла ошибка ${err.name} ${err.message}` }));
+    .send({ message: `Произошла ошибка: ${err.name} ${err.message}` }));
 };
 // Функция, которая создаёт карточку
 const createCard = (req, res) => {
@@ -41,7 +41,7 @@ const createCard = (req, res) => {
       } else {
         res
           .status(INTERNAL_SERVER_ERROR_CODE)
-          .send({ message: `Произошла ошибка ${err.name} ${err.message}` });
+          .send({ message: `Произошла ошибка: ${err.name} ${err.message}` });
       }
     })
 };
@@ -64,7 +64,7 @@ const deleteCardById = (req, res) => {
       } else {
         res
           .status(INTERNAL_SERVER_ERROR_CODE)
-          .send({ message: `Произошла ошибка ${err.name} ${err.message}` });
+          .send({ message: `Произошла ошибка: ${err.name} ${err.message}` });
       }
     });
 };
@@ -92,7 +92,7 @@ const likeCard = (req, res) => {
     } else {
       res
         .status(INTERNAL_SERVER_ERROR_CODE)
-        .send({ message: `Произошла ошибка ${err.name} ${err.message}` });
+        .send({ message: `Произошла ошибка: ${err.name} ${err.message}` });
     }
   });
 };
@@ -120,7 +120,7 @@ const dislikeCard = (req, res) => {
     } else {
       res
         .status(INTERNAL_SERVER_ERROR_CODE)
-        .send({ message: `Произошла ошибка ${err.name} ${err.message}` });
+        .send({ message: `Произошла ошибка: ${err.name} ${err.message}` });
     }
   });
 };
