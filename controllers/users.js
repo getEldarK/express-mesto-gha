@@ -1,33 +1,80 @@
+const {
+  DocumentNotFoundError,
+  CastError,
+  ValidationError
+} = require('mongoose').Error;
+
 const User = require('../models/user');
 
-// Функция, которая возвращает всех пользователей
-module.exports.getUsers = (req, res) => {
-  User.find({})
-  .then((users) => res.status(200).send(users))
-  .catch((err) => res.status(500).send({ message: `Произошла ошибка ${err}` }));
-};
+const {
+  CREATED_CODE,
+  BAD_REQUEST_ERROR_CODE,
+  NOT_FOUND_ERROR_CODE,
+  INTERNAL_SERVER_ERROR_CODE,
+} = require('../utils/errors');
 
-// Функция, которая возвращает пользователя по _id
-module.exports.getUserById = (req, res) => {
-  User.findById(req.params.userId)
-    .then((user) => {
-      res.status(200).send(user);
-    })
-    .catch((err) => res.status(500).send({ message: `Произошла ошибка ${err}` }));
+// Функция, которая возвращает всех пользователей
+const getUsers = (req, res) => {
+  User.find({})
+  .then((users) => res.send(users))
+    .catch((err) => {
+      res
+        .status(INTERNAL_SERVER_ERROR_CODE)
+        .send({ message: `Произошла ошибка ${err.name} ${err.message}` });
+    });
   };
 
-module.exports.createUser = (req, res) => {
+// Функция, которая возвращает пользователя по _id
+const getUserById = (req, res) => {
+  User.findById(req.params.userId)
+  .orFail()
+  .then((user) => {
+    res.send(user);
+  })
+  .catch((err) => {
+    if (err instanceof DocumentNotFoundError) {
+      res.status(NOT_FOUND_ERROR_CODE).send({
+        message: 'Пользователь по указанному _id не найден',
+      });
+      return;
+    }
+    if (err instanceof CastError) {
+      res
+        .status(BAD_REQUEST_ERROR_CODE)
+        .send({ message: 'Передан некорректный ID пользователя' });
+    } else {
+      res
+        .status(INTERNAL_SERVER_ERROR_CODE)
+        .send({ message: `Произошла ошибка ${err.name} ${err.message}` });
+    }
+  });
+};
+
+const createUser = (req, res) => {
   const { name, about, avatar } = req.body;
 
   User.create({ name, about, avatar })
     // вернём записанные в базу данные
-    .then((user) => res.status(200).send(user))
+    .then((user) => res.status(CREATED_CODE).send(user))
     // данные не записались, вернём ошибку
-    .catch((err) => res.status(500).send({ message: `Произошла ошибка ${err}` }));
+    .catch((err) => {
+      if (err instanceof ValidationError) {
+        const errorMessage = Object.values(err.errors)
+          .map((error) => error.message)
+          .join(' ');
+        res.status(BAD_REQUEST_ERROR_CODE).send({
+          message: `Переданы некорректные данные при создании пользователя. ${errorMessage}`,
+        });
+      } else {
+        res
+          .status(INTERNAL_SERVER_ERROR_CODE)
+          .send({ message: `Произошла ошибка ${err.name} ${err.message}` });
+      }
+    });
   };
 
 // Функция, которая обновляет профиль пользователя
-module.exports.updateProfile = (req, res) => {
+const updateProfile = (req, res) => {
   const { name, about } = req.body;
   // обновим имя найденного по _id пользователя
   User.findByIdAndUpdate(
@@ -36,15 +83,40 @@ module.exports.updateProfile = (req, res) => {
     {
       new: true, // обработчик then получит на вход обновлённую запись
       runValidators: true, // данные будут валидированы перед изменением
-      upsert: true, // если пользователь не найден, он будет создан
     },
   )
-    .then((user) => res.send(user))
-    .catch((err) => res.status(500).send({ message: `Произошла ошибка ${err}` }));
+  .orFail()
+  .then((user) => res.send(user))
+  .catch((err) => {
+    if (err instanceof DocumentNotFoundError) {
+      res.status(NOT_FOUND_ERROR_CODE).send({
+        message: 'Пользователь по указанному _id не найден',
+      });
+      return;
+    }
+    if (err instanceof ValidationError) {
+      const errorMessage = Object.values(err.errors)
+        .map((error) => error.message)
+        .join(' ');
+      res.status(BAD_REQUEST_ERROR_CODE).send({
+        message: `Переданы некорректные данные при обновлении профиля. ${errorMessage}`,
+      });
+      return;
+    }
+    if (err instanceof CastError) {
+      res
+        .status(BAD_REQUEST_ERROR_CODE)
+        .send({ message: 'Передан некорректный ID пользователя' });
+    } else {
+      res
+        .status(INTERNAL_SERVER_ERROR_CODE)
+        .send({ message: `Произошла ошибка ${err.name} ${err.message}` });
+    }
+  });
 };
 
 // Функция, которая обновляет аватар из профиля пользователя
-module.exports.updateAvatar = (req, res) => {
+const updateAvatar = (req, res) => {
   const { avatar } = req.body;
   // обновим имя найденного по _id пользователя
   User.findByIdAndUpdate(
@@ -53,9 +125,42 @@ module.exports.updateAvatar = (req, res) => {
     {
       new: true, // обработчик then получит на вход обновлённую запись
       runValidators: true, // данные будут валидированы перед изменением
-      upsert: true, // если пользователь не найден, он будет создан
     },
   )
-    .then((user) => res.send(user))
-    .catch((err) => res.status(500).send({ message: `Произошла ошибка ${err}` }));
+  .orFail()
+  .then((user) => res.send(user))
+  .catch((err) => {
+    if (err instanceof DocumentNotFoundError) {
+      res.status(NOT_FOUND_ERROR_CODE).send({
+        message: 'Пользователь по указанному _id не найден',
+      });
+      return;
+    }
+    if (err instanceof ValidationError) {
+      const errorMessage = Object.values(err.errors)
+        .map((error) => error.message)
+        .join(' ');
+      res.status(BAD_REQUEST_ERROR_CODE).send({
+        message: `Переданы некорректные данные при обновлении аватара. ${errorMessage}`,
+      });
+      return;
+    }
+    if (err instanceof CastError) {
+      res
+        .status(BAD_REQUEST_ERROR_CODE)
+        .send({ message: 'Передан некорректный ID пользователя' });
+    } else {
+      res
+        .status(INTERNAL_SERVER_ERROR_CODE)
+        .send({ message: `Произошла ошибка ${err.name} ${err.message}` });
+    }
+  });
+};
+
+module.exports = {
+  getUsers,
+  getUserById,
+  createUser,
+  updateProfile,
+  updateAvatar,
 };
