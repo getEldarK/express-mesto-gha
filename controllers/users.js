@@ -20,7 +20,7 @@ const getUsers = (req, res) => {
     .catch((err) => {
       res
         .status(INTERNAL_SERVER_ERROR_CODE)
-        .send({ message: `Произошла ошибка ${err.name} ${err.message}` });
+        .send({ message: `Произошла ошибка: ${err.name} ${err.message}` });
     });
   };
 
@@ -45,7 +45,7 @@ const getUserById = (req, res) => {
     } else {
       res
         .status(INTERNAL_SERVER_ERROR_CODE)
-        .send({ message: `Произошла ошибка ${err.name} ${err.message}` });
+        .send({ message: `Произошла ошибка: ${err.name} ${err.message}` });
     }
   });
 };
@@ -68,7 +68,7 @@ const createUser = (req, res) => {
       } else {
         res
           .status(INTERNAL_SERVER_ERROR_CODE)
-          .send({ message: `Произошла ошибка ${err.name} ${err.message}` });
+          .send({ message: `Произошла ошибка: ${err.name} ${err.message}` });
       }
     });
   };
@@ -110,7 +110,7 @@ const updateProfile = (req, res) => {
     } else {
       res
         .status(INTERNAL_SERVER_ERROR_CODE)
-        .send({ message: `Произошла ошибка ${err.name} ${err.message}` });
+        .send({ message: `Произошла ошибка: ${err.name} ${err.message}` });
     }
   });
 };
@@ -152,7 +152,7 @@ const updateAvatar = (req, res) => {
     } else {
       res
         .status(INTERNAL_SERVER_ERROR_CODE)
-        .send({ message: `Произошла ошибка ${err.name} ${err.message}` });
+        .send({ message: `Произошла ошибка: ${err.name} ${err.message}` });
     }
   });
 };
