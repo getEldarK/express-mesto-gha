@@ -17,7 +17,6 @@ const {
 // Функция, которая возвращает все карточки
 const getCards = (req, res) => {
   Card.find({})
-    .populate(['owner', 'likes'])
     .then((cards) => res.send(cards))
     .catch((err) => res.status(INTERNAL_SERVER_ERROR_CODE)
       .send({ message: `Произошла ошибка: ${err.name} ${err.message}` }));
@@ -78,7 +77,6 @@ const likeCard = (req, res) => {
     { new: true },
   )
     .orFail()
-    .then((card) => card.populate(['owner', 'likes']))
     .then((card) => res.send(card))
     .catch((err) => {
       if (err instanceof CastError) {
@@ -104,7 +102,6 @@ const dislikeCard = (req, res) => {
     { new: true },
   )
     .orFail()
-    .then((card) => card.populate(['owner', 'likes']))
     .then((card) => res.send(card))
     .catch((err) => {
       if (err instanceof CastError) {
