@@ -11,11 +11,11 @@
   "author": "",
   "license": "ISC",
   "devDependencies": {
-    "eslint": "^8.2.0",
+    "eslint": "^8.52.0",
     "eslint-config-airbnb-base": "^15.0.0",
     "eslint-plugin-import": "^2.29.0",
-    "nodemon": "^3.0.1",
-    "webpack": "^5.89.0"
+    "eslint-plugin-react": "^7.33.2",
+    "nodemon": "^3.0.1"
   },
   "dependencies": {
     "body-parser": "^1.20.2",

@@ -9,3 +9,4 @@ module.exports = {
   NOT_FOUND_ERROR_CODE,
   INTERNAL_SERVER_ERROR_CODE,
 };
+/* eslint-disable eol-last */

@@ -1,3 +1,4 @@
+/* eslint-disable eol-last */
 const router = require('express').Router(); // импортируем роутер из express
 const users = require('./users'); // импортируем роутер users.js
 const cards = require('./cards'); // импортируем роутер cards.js

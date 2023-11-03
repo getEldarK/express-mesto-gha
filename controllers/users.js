@@ -1,7 +1,8 @@
+/* eslint-disable eol-last */
 const {
   DocumentNotFoundError,
   CastError,
-  ValidationError
+  ValidationError,
 } = require('mongoose').Error;
 
 const User = require('../models/user');
@@ -16,38 +17,38 @@ const {
 // Функция, которая возвращает всех пользователей
 const getUsers = (req, res) => {
   User.find({})
-  .then((users) => res.send(users))
+    .then((users) => res.send(users))
     .catch((err) => {
       res
         .status(INTERNAL_SERVER_ERROR_CODE)
         .send({ message: `Произошла ошибка: ${err.name} ${err.message}` });
     });
-  };
+};
 
 // Функция, которая возвращает пользователя по _id
 const getUserById = (req, res) => {
   User.findById(req.params.userId)
-  .orFail()
-  .then((user) => {
-    res.send(user);
-  })
-  .catch((err) => {
-    if (err instanceof DocumentNotFoundError) {
-      res.status(NOT_FOUND_ERROR_CODE).send({
-        message: 'Пользователь по указанному _id не найден',
-      });
-      return;
-    }
-    if (err instanceof CastError) {
-      res
-        .status(BAD_REQUEST_ERROR_CODE)
-        .send({ message: 'Передан некорректный ID пользователя' });
-    } else {
-      res
-        .status(INTERNAL_SERVER_ERROR_CODE)
-        .send({ message: `Произошла ошибка: ${err.name} ${err.message}` });
-    }
-  });
+    .orFail()
+    .then((user) => {
+      res.send(user);
+    })
+    .catch((err) => {
+      if (err instanceof DocumentNotFoundError) {
+        res.status(NOT_FOUND_ERROR_CODE).send({
+          message: 'Пользователь по указанному _id не найден',
+        });
+        return;
+      }
+      if (err instanceof CastError) {
+        res
+          .status(BAD_REQUEST_ERROR_CODE)
+          .send({ message: 'Передан некорректный ID пользователя' });
+      } else {
+        res
+          .status(INTERNAL_SERVER_ERROR_CODE)
+          .send({ message: `Произошла ошибка: ${err.name} ${err.message}` });
+      }
+    });
 };
 
 const createUser = (req, res) => {
@@ -71,7 +72,7 @@ const createUser = (req, res) => {
           .send({ message: `Произошла ошибка: ${err.name} ${err.message}` });
       }
     });
-  };
+};
 
 // Функция, которая обновляет профиль пользователя
 const updateProfile = (req, res) => {
@@ -85,34 +86,34 @@ const updateProfile = (req, res) => {
       runValidators: true, // данные будут валидированы перед изменением
     },
   )
-  .orFail()
-  .then((user) => res.send(user))
-  .catch((err) => {
-    if (err instanceof DocumentNotFoundError) {
-      res.status(NOT_FOUND_ERROR_CODE).send({
-        message: 'Пользователь по указанному _id не найден',
-      });
-      return;
-    }
-    if (err instanceof ValidationError) {
-      const errorMessage = Object.values(err.errors)
-        .map((error) => error.message)
-        .join(' ');
-      res.status(BAD_REQUEST_ERROR_CODE).send({
-        message: `Переданы некорректные данные при обновлении профиля. ${errorMessage}`,
-      });
-      return;
-    }
-    if (err instanceof CastError) {
-      res
-        .status(BAD_REQUEST_ERROR_CODE)
-        .send({ message: 'Передан некорректный ID пользователя' });
-    } else {
-      res
-        .status(INTERNAL_SERVER_ERROR_CODE)
-        .send({ message: `Произошла ошибка: ${err.name} ${err.message}` });
-    }
-  });
+    .orFail()
+    .then((user) => res.send(user))
+    .catch((err) => {
+      if (err instanceof DocumentNotFoundError) {
+        res.status(NOT_FOUND_ERROR_CODE).send({
+          message: 'Пользователь по указанному _id не найден',
+        });
+        return;
+      }
+      if (err instanceof ValidationError) {
+        const errorMessage = Object.values(err.errors)
+          .map((error) => error.message)
+          .join(' ');
+        res.status(BAD_REQUEST_ERROR_CODE).send({
+          message: `Переданы некорректные данные при обновлении профиля. ${errorMessage}`,
+        });
+        return;
+      }
+      if (err instanceof CastError) {
+        res
+          .status(BAD_REQUEST_ERROR_CODE)
+          .send({ message: 'Передан некорректный ID пользователя' });
+      } else {
+        res
+          .status(INTERNAL_SERVER_ERROR_CODE)
+          .send({ message: `Произошла ошибка: ${err.name} ${err.message}` });
+      }
+    });
 };
 
 // Функция, которая обновляет аватар из профиля пользователя
@@ -127,34 +128,34 @@ const updateAvatar = (req, res) => {
       runValidators: true, // данные будут валидированы перед изменением
     },
   )
-  .orFail()
-  .then((user) => res.send(user))
-  .catch((err) => {
-    if (err instanceof DocumentNotFoundError) {
-      res.status(NOT_FOUND_ERROR_CODE).send({
-        message: 'Пользователь по указанному _id не найден',
-      });
-      return;
-    }
-    if (err instanceof ValidationError) {
-      const errorMessage = Object.values(err.errors)
-        .map((error) => error.message)
-        .join(' ');
-      res.status(BAD_REQUEST_ERROR_CODE).send({
-        message: `Переданы некорректные данные при обновлении аватара. ${errorMessage}`,
-      });
-      return;
-    }
-    if (err instanceof CastError) {
-      res
-        .status(BAD_REQUEST_ERROR_CODE)
-        .send({ message: 'Передан некорректный ID пользователя' });
-    } else {
-      res
-        .status(INTERNAL_SERVER_ERROR_CODE)
-        .send({ message: `Произошла ошибка: ${err.name} ${err.message}` });
-    }
-  });
+    .orFail()
+    .then((user) => res.send(user))
+    .catch((err) => {
+      if (err instanceof DocumentNotFoundError) {
+        res.status(NOT_FOUND_ERROR_CODE).send({
+          message: 'Пользователь по указанному _id не найден',
+        });
+        return;
+      }
+      if (err instanceof ValidationError) {
+        const errorMessage = Object.values(err.errors)
+          .map((error) => error.message)
+          .join(' ');
+        res.status(BAD_REQUEST_ERROR_CODE).send({
+          message: `Переданы некорректные данные при обновлении аватара. ${errorMessage}`,
+        });
+        return;
+      }
+      if (err instanceof CastError) {
+        res
+          .status(BAD_REQUEST_ERROR_CODE)
+          .send({ message: 'Передан некорректный ID пользователя' });
+      } else {
+        res
+          .status(INTERNAL_SERVER_ERROR_CODE)
+          .send({ message: `Произошла ошибка: ${err.name} ${err.message}` });
+      }
+    });
 };
 
 module.exports = {

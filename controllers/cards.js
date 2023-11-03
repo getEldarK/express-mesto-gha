@@ -1,7 +1,8 @@
+/* eslint-disable eol-last */
 const {
   DocumentNotFoundError,
   CastError,
-  ValidationError
+  ValidationError,
 } = require('mongoose').Error;
 
 const Card = require('../models/card');
@@ -19,14 +20,14 @@ const getCards = (req, res) => {
     .populate(['owner', 'likes'])
     .then((cards) => res.send(cards))
     .catch((err) => res.status(INTERNAL_SERVER_ERROR_CODE)
-    .send({ message: `Произошла ошибка: ${err.name} ${err.message}` }));
+      .send({ message: `Произошла ошибка: ${err.name} ${err.message}` }));
 };
 // Функция, которая создаёт карточку
 const createCard = (req, res) => {
   const { name, link } = req.body;
 
   Card.create({ name, link, owner: req.user._id })
-  .then((card) => card.populate('owner'))
+    .then((card) => card.populate('owner'))
     // вернём записанные в базу данные
     .then((card) => res.status(CREATED_CODE).send(card))
     // данные не записались, вернём ошибку
@@ -43,7 +44,7 @@ const createCard = (req, res) => {
           .status(INTERNAL_SERVER_ERROR_CODE)
           .send({ message: `Произошла ошибка: ${err.name} ${err.message}` });
       }
-    })
+    });
 };
 
 // Функция, которая удаляет карточку по идентификатору
@@ -76,26 +77,24 @@ const likeCard = (req, res) => {
     { $addToSet: { likes: req.user._id } }, // добавить _id в массив, если его там нет
     { new: true },
   )
-  .orFail()
-  .then((card) => card.populate(['owner', 'likes']))
-  .then((card) => res.send(card))
-  .catch((err) => {
-    if (err instanceof CastError) {
-      res
-        .status(BAD_REQUEST_ERROR_CODE)
-        .send({ message: 'Переданы некорректные данные для постановки/снятии лайка' });
-      return;
-    }
-    if (err instanceof DocumentNotFoundError) {
-      res.status(NOT_FOUND_ERROR_CODE).send({
-        message: 'Передан несуществующий _id карточки',
-      });
-    } else {
-      res
-        .status(INTERNAL_SERVER_ERROR_CODE)
-        .send({ message: `Произошла ошибка: ${err.name} ${err.message}` });
-    }
-  });
+    .orFail()
+    .then((card) => card.populate(['owner', 'likes']))
+    .then((card) => res.send(card))
+    .catch((err) => {
+      if (err instanceof CastError) {
+        res.status(BAD_REQUEST_ERROR_CODE)
+          .send({ message: 'Переданы некорректные данные для постановки/снятии лайка' });
+        return;
+      }
+      if (err instanceof DocumentNotFoundError) {
+        res.status(NOT_FOUND_ERROR_CODE).send({
+          message: 'Передан несуществующий _id карточки',
+        });
+      } else {
+        res.status(INTERNAL_SERVER_ERROR_CODE)
+          .send({ message: `Произошла ошибка: ${err.name} ${err.message}` });
+      }
+    });
 };
 
 const dislikeCard = (req, res) => {
@@ -104,32 +103,30 @@ const dislikeCard = (req, res) => {
     { $pull: { likes: req.user._id } }, // убрать _id из массива
     { new: true },
   )
-  .orFail()
-  .then((card) => card.populate(['owner', 'likes']))
-  .then((card) => res.send(card))
-  .catch((err) => {
-    if (err instanceof CastError) {
-      res
-        .status(BAD_REQUEST_ERROR_CODE)
-        .send({ message: 'Переданы некорректные данные для постановки/снятии лайка' });
-      return;
-    }
-    if (err instanceof DocumentNotFoundError) {
-      res.status(NOT_FOUND_ERROR_CODE).send({
-        message: 'Передан несуществующий _id карточки',
-      });
-    } else {
-      res
-        .status(INTERNAL_SERVER_ERROR_CODE)
-        .send({ message: `Произошла ошибка: ${err.name} ${err.message}` });
-    }
-  });
+    .orFail()
+    .then((card) => card.populate(['owner', 'likes']))
+    .then((card) => res.send(card))
+    .catch((err) => {
+      if (err instanceof CastError) {
+        res.status(BAD_REQUEST_ERROR_CODE)
+          .send({ message: 'Переданы некорректные данные для постановки/снятии лайка' });
+        return;
+      }
+      if (err instanceof DocumentNotFoundError) {
+        res.status(NOT_FOUND_ERROR_CODE).send({
+          message: 'Передан несуществующий _id карточки',
+        });
+      } else {
+        res.status(INTERNAL_SERVER_ERROR_CODE)
+          .send({ message: `Произошла ошибка: ${err.name} ${err.message}` });
+      }
+    });
 };
 
 module.exports = {
-getCards,
-createCard,
-deleteCardById,
-likeCard,
-dislikeCard,
+  getCards,
+  createCard,
+  deleteCardById,
+  likeCard,
+  dislikeCard,
 };

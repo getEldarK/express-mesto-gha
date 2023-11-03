@@ -1,3 +1,4 @@
+/* eslint-disable eol-last */
 const router = require('express').Router();
 const {
   getUsers,
