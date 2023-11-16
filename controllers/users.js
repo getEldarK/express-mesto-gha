@@ -5,6 +5,8 @@ const {
   ValidationError,
 } = require('mongoose').Error;
 
+const bcrypt = require('bcryptjs'); // импортируем bcrypt
+const jwt = require('jsonwebtoken'); // импортируем модуль jsonwebtoken
 const User = require('../models/user');
 
 const {
@@ -52,9 +54,17 @@ const getUserById = (req, res) => {
 };
 
 const createUser = (req, res) => {
-  const { name, about, avatar } = req.body;
-
-  User.create({ name, about, avatar })
+  const {
+    name,
+    about,
+    avatar,
+    email,
+    password,
+  } = req.body;
+  bcrypt.hash(password, 10)
+    .then((hash) => User.create({
+      name, about, avatar, email, password: hash,
+    }))
     // вернём записанные в базу данные
     .then((user) => res.status(CREATED_CODE).send(user))
     // данные не записались, вернём ошибку
@@ -71,6 +81,31 @@ const createUser = (req, res) => {
           .status(INTERNAL_SERVER_ERROR_CODE)
           .send({ message: `Произошла ошибка: ${err.name} ${err.message}` });
       }
+    });
+};
+
+const login = (req, res) => {
+  // console.log(req.body);
+  const { email, password } = req.body;
+
+  return User.findUserByCredentials(email, password)
+    .then((user) => {
+      // console.log(user._id);
+      // создадим токен
+      const token = jwt.sign({ _id: user._id }, 'some-secret-key', { expiresIn: '7d' });
+      // отправим токен, браузер сохранит его в куках
+      res.cookie('jwt', token, {
+        // token - наш JWT токен, который мы отправляем
+        maxAge: 3600000,
+        httpOnly: true,
+      })
+        .end(); // если у ответа нет тела, можно использовать метод end
+    })
+    .catch((err) => {
+      // ошибка аутентификации
+      res
+        .status(401)
+        .send({ message: err.message });
     });
 };
 
@@ -162,6 +197,7 @@ module.exports = {
   getUsers,
   getUserById,
   createUser,
+  login,
   updateProfile,
   updateAvatar,
 };
