@@ -28,7 +28,30 @@ const getUsers = (req, res) => {
 };
 
 const getUserInfo = (req, res) => {
-  console.log(req);
+  const userId = req.user._id;
+
+  User.findById(userId)
+    .orFail()
+    .then((user) => {
+      res.send(user);
+    })
+    .catch((err) => {
+      if (err instanceof DocumentNotFoundError) {
+        res.status(NOT_FOUND_ERROR_CODE).send({
+          message: 'Пользователь по указанному _id не найден',
+        });
+        return;
+      }
+      if (err instanceof CastError) {
+        res
+          .status(BAD_REQUEST_ERROR_CODE)
+          .send({ message: 'Передан некорректный ID пользователя' });
+      } else {
+        res
+          .status(INTERNAL_SERVER_ERROR_CODE)
+          .send({ message: `Произошла ошибка: ${err.name} ${err.message}` });
+      }
+    });
 };
 
 // Функция, которая возвращает пользователя по _id
@@ -102,7 +125,8 @@ const login = (req, res) => {
         // token - наш JWT токен, который мы отправляем
         maxAge: 3600000,
         httpOnly: true,
-      })
+      });
+      res.send({ token })
         .end(); // если у ответа нет тела, можно использовать метод end
     })
     .catch((err) => {

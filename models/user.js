@@ -1,6 +1,7 @@
 /* eslint-disable eol-last */
 const mongoose = require('mongoose');
 const bcrypt = require('bcryptjs'); // импортируем bcrypt
+const isEmail = require('validator/lib/isEmail');
 
 const userSchema = new mongoose.Schema(
   {
@@ -34,6 +35,12 @@ const userSchema = new mongoose.Schema(
       type: String,
       required: true,
       unique: true,
+      validate: {
+        validator(v) {
+          return isEmail(v);
+        },
+        message: 'e-mail не соответствует формату адреса электронной почты',
+      },
     },
 
     password: {
@@ -52,7 +59,7 @@ const userSchema = new mongoose.Schema(
 // у него будет два параметра — почта и пароль
 userSchema.statics.findUserByCredentials = function (email, password) {
   // попытаемся найти пользователя по почте
-  return this.findOne({ email }) // this — это модель User
+  return this.findOne({ email }).select('+password') // this — это модель User
     .then((user) => {
     // не нашёлся — отклоняем промис
       if (!user) {

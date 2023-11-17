@@ -3,10 +3,13 @@ const router = require('express').Router(); // импортируем роуте
 const users = require('./users'); // импортируем роутер users.js
 const cards = require('./cards'); // импортируем роутер cards.js
 const auth = require('../middlewares/auth');
+const { createUser, login } = require('../controllers/users');
 
 const { NOT_FOUND_ERROR_CODE } = require('../utils/errors');
 
-router.use('/', users);
+router.post('/signup', createUser);
+router.post('/signin', login);
+router.use(auth);
 router.use('/users', users);
 router.use('/cards', cards);
 

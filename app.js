@@ -2,6 +2,7 @@
 
 const express = require('express');
 const mongoose = require('mongoose');
+const { errors } = require('celebrate');
 // const bodyParser = require('body-parser');
 const router = require('./routes/index');
 
@@ -24,6 +25,7 @@ app.use(express.urlencoded({ extended: true }));
 // });
 
 app.use(router);
+app.use(errors);
 
 app.listen(PORT, () => {
   console.log(`Listening to port ${PORT}`);
