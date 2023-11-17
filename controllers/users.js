@@ -27,6 +27,10 @@ const getUsers = (req, res) => {
     });
 };
 
+const getUserInfo = (req, res) => {
+  console.log(req);
+};
+
 // Функция, которая возвращает пользователя по _id
 const getUserById = (req, res) => {
   User.findById(req.params.userId)
@@ -196,6 +200,7 @@ const updateAvatar = (req, res) => {
 module.exports = {
   getUsers,
   getUserById,
+  getUserInfo,
   createUser,
   login,
   updateProfile,

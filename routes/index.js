@@ -2,8 +2,11 @@
 const router = require('express').Router(); // импортируем роутер из express
 const users = require('./users'); // импортируем роутер users.js
 const cards = require('./cards'); // импортируем роутер cards.js
+const auth = require('../middlewares/auth');
+
 const { NOT_FOUND_ERROR_CODE } = require('../utils/errors');
 
+router.use('/', users);
 router.use('/users', users);
 router.use('/cards', cards);
 

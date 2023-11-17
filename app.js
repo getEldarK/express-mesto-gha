@@ -16,13 +16,12 @@ mongoose.connect('mongodb://127.0.0.1:27017/mestodb', {
 app.use(express.json()); // для собирания JSON-формата
 app.use(express.urlencoded({ extended: true }));
 
-app.use((req, res, next) => {
-  req.user = {
-    _id: '6542160f29481bb55c523816', // вставьте сюда _id созданного в предыдущем пункте пользователя
-  };
+// app.use((req, res, next) => {
+//   req.user = {
+//     _id: '6542160f29481bb55c523816',
 
-  next();
-});
+//   next();
+// });
 
 app.use(router);
 
