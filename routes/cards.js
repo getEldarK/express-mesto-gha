@@ -1,5 +1,8 @@
 /* eslint-disable eol-last */
 const router = require('express').Router();
+const { celebrate, Joi } = require('celebrate');
+const { regex } = require('../utils/errors');
+
 const {
   getCards,
   createCard,
@@ -9,9 +12,40 @@ const {
 } = require('../controllers/cards');
 
 router.get('/', getCards);
-router.post('/', createCard);
-router.delete('/:cardId', deleteCardById);
-router.put('/:cardId/likes', likeCard);
-router.delete('/:cardId/likes', dislikeCard);
+router.post('/', celebrate({
+  // валидируем тело запроса
+  body: Joi.object().keys({
+    name: Joi.string().required().min(2).max(30),
+    link: Joi.string().required().regex(regex),
+  }),
+}), createCard);
+
+router.delete(
+  '/:cardId',
+  celebrate({
+  // валидируем параметры
+    params: Joi.object().keys({
+      cardId: Joi.string().alphanum().hex().length(24)
+        .required(),
+    }),
+  }),
+  deleteCardById,
+);
+
+router.put('/:cardId/likes', celebrate({
+  // валидируем параметры
+  params: Joi.object().keys({
+    cardId: Joi.string().alphanum().hex().length(24)
+      .required(),
+  }),
+}), likeCard);
+
+router.delete('/:cardId/likes', celebrate({
+  // валидируем параметры
+  params: Joi.object().keys({
+    cardId: Joi.string().alphanum().hex().length(24)
+      .required(),
+  }),
+}), dislikeCard);
 
 module.exports = router; // экспортировали роутер

@@ -2,6 +2,7 @@
 const mongoose = require('mongoose');
 const bcrypt = require('bcryptjs'); // импортируем bcrypt
 const isEmail = require('validator/lib/isEmail');
+const isUrl = require('validator/lib/isURL');
 
 const userSchema = new mongoose.Schema(
   {
@@ -27,7 +28,13 @@ const userSchema = new mongoose.Schema(
 
     avatar: {
       type: String,
-      required: true,
+      validate: {
+        // validator - функция проверки данных. avatar - значение свойства avatar,
+        // его можно обозначить как угодно, главное, чтобы совпадали обозначения в скобках
+        // если avatar не соответствует формату, вернётся false
+        validator: (avatar) => isUrl(avatar, { protocols: ['http', 'https'], require_protocol: true }),
+        message: 'ссылка не соответствует формату', // когда validator вернёт false, будет использовано это сообщение
+      },
       default: 'https://pictures.s3.yandex.net/resources/jacques-cousteau_1604399756.png',
     },
 
@@ -36,9 +43,7 @@ const userSchema = new mongoose.Schema(
       required: true,
       unique: true,
       validate: {
-        validator(v) {
-          return isEmail(v);
-        },
+        validator: (email) => isEmail(email),
         message: 'e-mail не соответствует формату адреса электронной почты',
       },
     },
@@ -57,6 +62,7 @@ const userSchema = new mongoose.Schema(
 
 // добавим метод findUserByCredentials схеме пользователя
 // у него будет два параметра — почта и пароль
+// eslint-disable-next-line func-names
 userSchema.statics.findUserByCredentials = function (email, password) {
   // попытаемся найти пользователя по почте
   return this.findOne({ email }).select('+password') // this — это модель User

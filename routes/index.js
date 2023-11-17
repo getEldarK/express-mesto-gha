@@ -1,5 +1,6 @@
 /* eslint-disable eol-last */
 const router = require('express').Router(); // импортируем роутер из express
+const { celebrate, Joi } = require('celebrate');
 const users = require('./users'); // импортируем роутер users.js
 const cards = require('./cards'); // импортируем роутер cards.js
 const auth = require('../middlewares/auth');
@@ -7,11 +8,23 @@ const { createUser, login } = require('../controllers/users');
 
 const { NOT_FOUND_ERROR_CODE } = require('../utils/errors');
 
-router.post('/signup', createUser);
-router.post('/signin', login);
-router.use(auth);
-router.use('/users', users);
-router.use('/cards', cards);
+router.post('/signup', celebrate({
+  body: Joi.object().keys({
+    email: Joi.string().required().email(),
+    password: Joi.string().required().min(8),
+  }),
+}), createUser);
+
+router.post('/signin', celebrate({
+  body: Joi.object().keys({
+    email: Joi.string().required().min(2).max(30),
+    password: Joi.string().required().min(2),
+  }),
+}), login);
+
+router.use('/users', auth, users);
+
+router.use('/cards', auth, cards);
 
 router.use('*', (req, res) => {
   res.status(NOT_FOUND_ERROR_CODE).send({ message: 'Запрашиваемый URL не существует' });
