@@ -5,6 +5,7 @@ const users = require('./users'); // импортируем роутер users.j
 const cards = require('./cards'); // импортируем роутер cards.js
 const auth = require('../middlewares/auth');
 const { createUser, login } = require('../controllers/users');
+const { regex } = require('../utils/errors');
 
 const { NOT_FOUND_ERROR_CODE } = require('../utils/errors');
 
@@ -12,13 +13,16 @@ router.post('/signup', celebrate({
   body: Joi.object().keys({
     email: Joi.string().required().email(),
     password: Joi.string().required().min(8),
+    name: Joi.string().min(2).max(30),
+    about: Joi.string().min(2).max(30),
+    avatar: Joi.string().regex(regex),
   }),
 }), createUser);
 
 router.post('/signin', celebrate({
   body: Joi.object().keys({
-    email: Joi.string().required().min(2).max(30),
-    password: Joi.string().required().min(2),
+    email: Joi.string().required().email(),
+    password: Joi.string().required().min(8),
   }),
 }), login);
 
