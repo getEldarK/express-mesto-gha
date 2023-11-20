@@ -1,7 +1,7 @@
 /* eslint-disable eol-last */
 const router = require('express').Router();
 const { celebrate, Joi } = require('celebrate');
-const { regex } = require('../utils/errors');
+const { regEx } = require('../utils/errors');
 
 const {
   getCards,
@@ -16,17 +16,16 @@ router.post('/', celebrate({
   // валидируем тело запроса
   body: Joi.object().keys({
     name: Joi.string().required().min(2).max(30),
-    link: Joi.string().required().regex(regex),
+    link: Joi.string().required().regex(regEx),
   }),
 }), createCard);
 
 router.delete(
   '/:cardId',
   celebrate({
-  // валидируем параметры
+    // валидируем параметры
     params: Joi.object().keys({
-      cardId: Joi.string().alphanum().hex().length(24)
-        .required(),
+      cardId: Joi.string().hex().length(24).required(),
     }),
   }),
   deleteCardById,
@@ -35,7 +34,7 @@ router.delete(
 router.put('/:cardId/likes', celebrate({
   // валидируем параметры
   params: Joi.object().keys({
-    cardId: Joi.string().alphanum().hex().length(24)
+    cardId: Joi.string().hex().length(24)
       .required(),
   }),
 }), likeCard);
@@ -43,7 +42,7 @@ router.put('/:cardId/likes', celebrate({
 router.delete('/:cardId/likes', celebrate({
   // валидируем параметры
   params: Joi.object().keys({
-    cardId: Joi.string().alphanum().hex().length(24)
+    cardId: Joi.string().hex().length(24)
       .required(),
   }),
 }), dislikeCard);

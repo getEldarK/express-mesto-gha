@@ -1,8 +1,10 @@
 /* eslint-disable eol-last */
+const { CONFLICT_409 } = require('../utils/errors');
+
 class ConflictError extends Error {
   constructor(message) {
     super(message);
-    this.statusCode = 409;
+    this.statusCode = CONFLICT_409;
   }
 }
 

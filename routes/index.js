@@ -5,9 +5,9 @@ const users = require('./users'); // импортируем роутер users.j
 const cards = require('./cards'); // импортируем роутер cards.js
 const auth = require('../middlewares/auth');
 const { createUser, login } = require('../controllers/users');
-const { regex } = require('../utils/errors');
+const { regEx } = require('../utils/errors');
 
-const { NOT_FOUND_ERROR_CODE } = require('../utils/errors');
+const { NOT_FOUND_404 } = require('../utils/errors');
 
 router.post('/signup', celebrate({
   body: Joi.object().keys({
@@ -15,7 +15,7 @@ router.post('/signup', celebrate({
     password: Joi.string().required().min(8),
     name: Joi.string().min(2).max(30),
     about: Joi.string().min(2).max(30),
-    avatar: Joi.string().regex(regex),
+    avatar: Joi.string().regex(regEx),
   }),
 }), createUser);
 
@@ -31,7 +31,7 @@ router.use('/users', auth, users);
 router.use('/cards', auth, cards);
 
 router.use('*', (req, res) => {
-  res.status(NOT_FOUND_ERROR_CODE).send({ message: 'Запрашиваемый URL не существует' });
+  res.status(NOT_FOUND_404).send({ message: 'Запрашиваемый URL не существует' });
 });
 
 module.exports = router;
