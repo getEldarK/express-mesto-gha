@@ -56,9 +56,7 @@ const userSchema = new mongoose.Schema(
       select: false,
     },
   },
-  {
-    versionKey: false,
-  },
+  { toJSON: { useProjection: true }, toObject: { useProjection: true }, versionKey: false },
 );
 
 // добавим метод findUserByCredentials схеме пользователя

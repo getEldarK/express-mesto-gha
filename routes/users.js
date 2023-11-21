@@ -1,7 +1,10 @@
 /* eslint-disable eol-last */
 const router = require('express').Router();
-const { celebrate, Joi } = require('celebrate');
-const { regEx } = require('../utils/errors');
+const {
+  userIdValidator,
+  userDataValidator,
+  userAvatarValidator,
+} = require('../middlewares/validators/userValidator');
 
 const {
   getUsers,
@@ -14,26 +17,10 @@ const {
 router.get('/', getUsers);
 router.get('/me', getUserInfo);
 
-router.get('/:userId', celebrate({
-  // валидируем параметры, alphanum - буквенно-цифровые символы
-  // hex - шестнадцатеричная строка
-  params: Joi.object().keys({
-    userId: Joi.string().hex().length(24)
-      .required(),
-  }),
-}), getUserById);
+router.get('/:userId', userIdValidator, getUserById);
 
-router.patch('/me', celebrate({
-  body: Joi.object().keys({
-    name: Joi.string().required().min(2).max(30),
-    about: Joi.string().required().min(2).max(30),
-  }),
-}), updateProfile);
+router.patch('/me', userDataValidator, updateProfile);
 
-router.patch('/me/avatar', celebrate({
-  body: Joi.object().keys({
-    avatar: Joi.string().required().regex(regEx),
-  }),
-}), updateAvatar);
+router.patch('/me/avatar', userAvatarValidator, updateAvatar);
 
 module.exports = router; // экспортировали роутер
