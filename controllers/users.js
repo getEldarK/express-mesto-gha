@@ -15,6 +15,9 @@ const User = require('../models/user');
 
 const { CREATED_201 } = require('../utils/errors');
 
+// Импорт переменной секретного ключа
+const { JWT_SECRET } = require('../utils/errors');
+
 // Функция, которая возвращает всех пользователей
 const getUsers = (req, res, next) => {
   User.find({})
@@ -88,12 +91,13 @@ const login = (req, res, next) => {
   return User.findUserByCredentials(email, password)
     .then((user) => {
       // создадим токен
-      const token = jwt.sign({ _id: user._id }, 'some-secret-key', { expiresIn: '7d' });
+      const token = jwt.sign({ _id: user._id }, JWT_SECRET, { expiresIn: '7d' });
       // отправим токен, браузер сохранит его в куках
       res.cookie('jwt', token, {
         // token - наш JWT токен, который мы отправляем
         maxAge: 3600000,
         httpOnly: true,
+        sameSite: true, // указали браузеру посылать куки, только если запрос с того же домена
       })
       // отправим токен пользователю
         .send({ token });
@@ -102,10 +106,7 @@ const login = (req, res, next) => {
     .catch((err) => {
       // ошибка аутентификации
       if (err instanceof ValidationError) {
-        const errorMessage = Object.values(err.errors)
-          .map((error) => error.message)
-          .join(', ');
-        next(new BadRequestError(`Переданы некорректные данные при создании пользователя: ${errorMessage}`));
+        next(new BadRequestError('Введённый e-mail не соответствует формату'));
       } else {
         next(err);
       }
@@ -134,7 +135,7 @@ const updateUserData = (req, res, next, updateOptions) => {
         const errorMessage = Object.values(err.errors)
           .map((error) => error.message)
           .join(', ');
-        next(new BadRequestError(`Переданы некорректные данные при создании пользователя: ${errorMessage}`));
+          next(new BadRequestError(`Переданы некорректные данные: ${errorMessage}`));
         return;
       }
       if (err instanceof CastError) {

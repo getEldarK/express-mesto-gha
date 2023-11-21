@@ -1,7 +1,7 @@
 /* eslint-disable eol-last */
 
 const { celebrate, Joi } = require('celebrate');
-const { regEx } = require('../../utils/constants');
+const { regEx } = require('../../utils');
 
 const createUserValidator = celebrate({
   body: Joi.object().keys({

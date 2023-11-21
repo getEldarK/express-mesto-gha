@@ -1,10 +1,5 @@
 /* eslint-disable eol-last */
 const router = require('express').Router();
-const {
-  userIdValidator,
-  userDataValidator,
-  userAvatarValidator,
-} = require('../middlewares/validators/userValidator');
 
 const {
   getUsers,
@@ -13,6 +8,12 @@ const {
   updateProfile,
   updateAvatar,
 } = require('../controllers/users');
+
+const {
+  userIdValidator,
+  userDataValidator,
+  userAvatarValidator,
+} = require('../middlewares/validators/userValidator');
 
 router.get('/', getUsers);
 router.get('/me', getUserInfo);

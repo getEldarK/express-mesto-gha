@@ -13,6 +13,12 @@ const {
   dislikeCard,
 } = require('../controllers/cards');
 
+// Импорт валидаторов
+const {
+  cardDataValidator,
+  cardIdValidator,
+} = require('../middlewares/validators/cardValidator');
+
 router.get('/', getCards);
 router.post('/', cardDataValidator, createCard);
 
