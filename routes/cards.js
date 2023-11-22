@@ -1,9 +1,5 @@
 /* eslint-disable eol-last */
 const router = require('express').Router();
-const {
-  cardDataValidator,
-  cardIdValidator,
-} = require('../middlewares/validators/cardValidator');
 
 const {
   getCards,

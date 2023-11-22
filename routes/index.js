@@ -3,7 +3,7 @@ const router = require('express').Router(); // импортируем роуте
 const users = require('./users'); // импортируем роутер users.js
 const cards = require('./cards'); // импортируем роутер cards.js
 const auth = require('../middlewares/auth');
-const { createUser, login } = require('../controllers/users');
+const { createUser, login, logout } = require('../controllers/users');
 const { createUserValidator, loginValidator } = require('../middlewares/validators/userValidator');
 const NotFoundError = require('../errors/NotFoundError');
 // роуты, не требующие авторизации - регистрация и логин
@@ -19,7 +19,9 @@ router.use('/users', auth, users);
 
 router.use('/cards', auth, cards);
 
-router.use('*', (req, res, next) => {
+router.get('/signout', auth, logout); // добавили роутер для выхода из системы (очищзения куки)
+
+router.use('*', auth, (req, res, next) => {
   next(new NotFoundError('Запрашиваемый URL не существует'));
 });
 

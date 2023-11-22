@@ -103,14 +103,11 @@ const login = (req, res, next) => {
         .send({ token });
       // .end(); // если у ответа нет тела, можно использовать метод end
     })
-    .catch((err) => {
-      // ошибка аутентификации
-      if (err instanceof ValidationError) {
-        next(new BadRequestError('Введённый e-mail не соответствует формату'));
-      } else {
-        next(err);
-      }
-    });
+    .catch(next);
+};
+
+const logout = (req, res) => {
+  res.clearCookie('jwt').send({ message: 'Вы вышли из системы' });
 };
 
 const updateUserData = (req, res, next, updateOptions) => {
@@ -164,6 +161,7 @@ module.exports = {
   getUserInfo,
   createUser,
   login,
+  logout,
   updateProfile,
   updateAvatar,
 };
