@@ -1,5 +1,4 @@
 /* eslint-disable eol-last */
-// Импорт модуля jsonwebtoken
 const jwt = require('jsonwebtoken');
 
 // Импорт переменной секретного ключа

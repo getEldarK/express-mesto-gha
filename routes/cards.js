@@ -1,5 +1,4 @@
 /* eslint-disable eol-last */
-// Импорт роутера
 const router = require('express').Router();
 
 // Импорт контроллеров
@@ -19,13 +18,9 @@ const {
 
 // Роутеры
 router.get('/', getCards);
-
 router.post('/', cardDataValidator, createCard);
-
 router.delete('/:cardId', cardIdValidator, deleteCardById);
-
 router.put('/:cardId/likes', cardIdValidator, likeCard);
-
 router.delete('/:cardId/likes', cardIdValidator, dislikeCard);
 
-module.exports = router; // экспортировали этот роутер
+module.exports = router;

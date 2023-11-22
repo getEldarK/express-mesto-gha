@@ -20,13 +20,9 @@ const {
 
 // Роутеры
 router.get('/', getUsers);
-
 router.get('/me', getCurrentUserInfo);
-
 router.get('/:userId', userIdValidator, getUserById);
-
 router.patch('/me', userDataValidator, updateProfile);
-
 router.patch('/me/avatar', userAvatarValidator, updateAvatar);
 
-module.exports = router; // экспортировали этот роутер
+module.exports = router;
