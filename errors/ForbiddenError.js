@@ -1,5 +1,5 @@
 /* eslint-disable eol-last */
-const { FORBIDDEN_403 } = require('../utils/errors');
+const { FORBIDDEN_403 } = require('../utils/constants');
 
 class ForbiddenError extends Error {
   constructor(message) {

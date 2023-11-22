@@ -1,5 +1,5 @@
 /* eslint-disable eol-last */
-const { NOT_FOUND_404 } = require('../utils/errors');
+const { NOT_FOUND_404 } = require('../utils/constants');
 
 class NotFoundError extends Error {
   constructor(message) {

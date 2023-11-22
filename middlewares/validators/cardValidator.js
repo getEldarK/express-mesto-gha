@@ -1,7 +1,6 @@
 /* eslint-disable eol-last */
-
 const { celebrate, Joi } = require('celebrate');
-const { regEx } = require('../../utils/errors');
+const { regEx } = require('../../utils/constants');
 
 const cardDataValidator = celebrate({
   // валидируем тело запроса

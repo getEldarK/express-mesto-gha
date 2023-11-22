@@ -1,36 +1,30 @@
 /* eslint-disable eol-last */
-const {
-  CastError,
-  ValidationError,
-} = require('mongoose').Error;
+// Импорт классов ошибок из mongoose.Error
+const { CastError, ValidationError } = require('mongoose').Error;
 
+// Импорт модулей bcryptjs и jsonwebtoken
 const bcrypt = require('bcryptjs'); // импортируем bcrypt
 const jwt = require('jsonwebtoken'); // импортируем модуль jsonwebtoken
 
+// Импорт классов ошибок из конструкторов ошибок
 const NotFoundError = require('../errors/NotFoundError');
 const BadRequestError = require('../errors/BadRequestError');
 const ConflictError = require('../errors/ConflictError');
 
-const User = require('../models/user');
+// Импорт модели user
+const User = require('../models/user'); // импортируем модель user
 
-const { CREATED_201 } = require('../utils/errors');
+// Импорт статус-кодов ошибок
+const { CREATED_201 } = require('../utils/constants');
 
 // Импорт переменной секретного ключа
-const { JWT_SECRET } = require('../utils/errors');
+const { JWT_SECRET } = require('../utils/config');
 
 // Функция, которая возвращает всех пользователей
 const getUsers = (req, res, next) => {
   User.find({})
     .then((users) => res.send(users))
     .catch(next); // добавили catch, такая запись эквивалентна следующей: .catch(err => next(err));
-};
-
-const getUserInfo = (req, res, next) => {
-  const userId = req.user._id;
-
-  User.findById(userId)
-    .then((user) => res.send(user))
-    .catch(next);
 };
 
 // Функция, которая возвращает пользователя по _id
@@ -40,19 +34,28 @@ const getUserById = (req, res, next) => {
   User.findById(userId)
     .then((user) => {
       if (!user) {
-        throw new NotFoundError('Пользователь по указанному _id не найден');
+        throw new NotFoundError('Такого пользователя нет');
       }
       res.send(user);
     })
     .catch((err) => {
       if (err instanceof CastError) {
-        next(new BadRequestError('Передан некорректный ID пользователя'));
+        next(new BadRequestError('Некорректный Iв пользователя'));
       } else {
         next(err);
       }
     });
 };
 
+const getCurrentUserInfo = (req, res, next) => {
+  const userId = req.user._id;
+
+  User.findById(userId)
+    .then((user) => res.send(user))
+    .catch(next);
+};
+
+// Функция (контроллер) регистрации, которая создаёт пользователя
 const createUser = (req, res, next) => {
   const {
     name, about, avatar, email, password,
@@ -67,28 +70,29 @@ const createUser = (req, res, next) => {
       password: hash, // записываем хеш в базу
     }))
     // вернём записанные в базу данные
-    .then((user) => res.status(CREATED_201).send(user))
+    .then((user) => res.status(CREATED_201).send({ data: user }))
     // данные не записались, вернём ошибку
     .catch((err) => {
       if (err.code === 11000) {
-        next(new ConflictError('Пользователь с таким e-mail уже существует'));
+        next(new ConflictError('Пользователь с таким email уже зарегистрирован'));
         return;
       }
       if (err instanceof ValidationError) {
         const errorMessage = Object.values(err.errors)
           .map((error) => error.message)
           .join(', ');
-        next(new BadRequestError(`Переданы некорректные данные при создании пользователя: ${errorMessage}`));
+        next(new BadRequestError(`Некорректные данные: ${errorMessage}`));
       } else {
         next(err);
       }
     });
 };
 
+// Функция (контроллер) аутентификации
 const login = (req, res, next) => {
   const { email, password } = req.body;
 
-  return User.findUserByCredentials(email, password)
+  User.findUserByCredentials(email, password)
     .then((user) => {
       // создадим токен
       const token = jwt.sign({ _id: user._id }, JWT_SECRET, { expiresIn: '7d' });
@@ -110,6 +114,7 @@ const logout = (req, res) => {
   res.clearCookie('jwt').send({ message: 'Вы вышли из системы' });
 };
 
+// Функция, которая обновляет данные пользователя
 const updateUserData = (req, res, next, updateOptions) => {
   const { _id: userId } = req.user;
   // обновим имя найденного по _id пользователя
@@ -123,7 +128,7 @@ const updateUserData = (req, res, next, updateOptions) => {
   )
     .then((user) => {
       if (!user) {
-        throw new NotFoundError('Пользователь по указанному _id не найден');
+        throw new NotFoundError('Такого пользователя нет');
       }
       res.send(user);
     })
@@ -132,24 +137,24 @@ const updateUserData = (req, res, next, updateOptions) => {
         const errorMessage = Object.values(err.errors)
           .map((error) => error.message)
           .join(', ');
-          next(new BadRequestError(`Переданы некорректные данные: ${errorMessage}`));
+        next(new BadRequestError(`Некорректные данные: ${errorMessage}`));
         return;
       }
       if (err instanceof CastError) {
-        next(new BadRequestError('Передан некорректный ID пользователя'));
+        next(new BadRequestError('Некорректный Id пользователя'));
       } else {
         next(err);
       }
     });
 };
 
-// Функция, которая обновляет профиль пользователя
+// Функция-декоратор, которая обновляет профиль пользователя
 const updateProfile = (req, res, next) => {
   const updateOptions = req.body;
   updateUserData(req, res, next, updateOptions);
 };
 
-// Функция, которая обновляет аватар из профиля пользователя
+// Функция-декоратор, которая обновляет аватар пользователя
 const updateAvatar = (req, res, next) => {
   const updateOptions = req.body;
   updateUserData(req, res, next, updateOptions);
@@ -158,7 +163,7 @@ const updateAvatar = (req, res, next) => {
 module.exports = {
   getUsers,
   getUserById,
-  getUserInfo,
+  getCurrentUserInfo,
   createUser,
   login,
   logout,

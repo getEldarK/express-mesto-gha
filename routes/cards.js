@@ -1,6 +1,8 @@
 /* eslint-disable eol-last */
+// Импорт роутера
 const router = require('express').Router();
 
+// Импорт контроллеров
 const {
   getCards,
   createCard,
@@ -15,7 +17,9 @@ const {
   cardIdValidator,
 } = require('../middlewares/validators/cardValidator');
 
+// Роутеры
 router.get('/', getCards);
+
 router.post('/', cardDataValidator, createCard);
 
 router.delete('/:cardId', cardIdValidator, deleteCardById);
@@ -24,4 +28,4 @@ router.put('/:cardId/likes', cardIdValidator, likeCard);
 
 router.delete('/:cardId/likes', cardIdValidator, dislikeCard);
 
-module.exports = router; // экспортировали роутер
+module.exports = router; // экспортировали этот роутер

@@ -1,16 +1,17 @@
 /* eslint-disable eol-last */
-const {
-  CastError,
-  ValidationError,
-} = require('mongoose').Error;
+// Импорт классов ошибок из mongoose.Error
+const { CastError, ValidationError } = require('mongoose').Error;
 
+// Импорт классов ошибок из конструкторов ошибок
 const NotFoundError = require('../errors/NotFoundError');
 const BadRequestError = require('../errors/BadRequestError');
 const ForbiddenError = require('../errors/ForbiddenError');
 
+// Импорт модели user
 const Card = require('../models/card');
 
-const { CREATED_201 } = require('../utils/errors');
+// Импорт статус-кодов ошибок
+const { CREATED_201 } = require('../utils/constants');
 
 // Функция, которая возвращает все карточки
 const getCards = (req, res, next) => {
@@ -19,6 +20,7 @@ const getCards = (req, res, next) => {
     .then((cards) => res.send(cards))
     .catch(next);
 };
+
 // Функция, которая создаёт карточку
 const createCard = (req, res, next) => {
   const { name, link } = req.body;
@@ -34,7 +36,7 @@ const createCard = (req, res, next) => {
         const errorMessage = Object.values(err.errors)
           .map((error) => error.message)
           .join(' ');
-        next(new BadRequestError(`Переданы некорректные данные при создании карточки: ${errorMessage}`));
+        next(new BadRequestError(`Некорректные данные: ${errorMessage}`));
       } else {
         next(err);
       }
@@ -49,29 +51,31 @@ const deleteCardById = (req, res, next) => {
   Card.findById(cardId)
     .then((card) => {
       if (!card) {
-        throw new NotFoundError('Карточка с указанным _id не найдена');
+        throw new NotFoundError('Такой карточки нет');
       }
       if (userId !== card.owner.toString()) {
-        throw new ForbiddenError('К сожалению, Вы не можете удалить эту карточку');
+        throw new ForbiddenError('Можно удалять только собственные посты');
       }
       return Card.findByIdAndRemove(cardId)
         .then(() => res.send({ message: 'Пост удалён' }));
     })
     .catch((err) => {
       if (err instanceof CastError) {
-        next(new BadRequestError('Передан некорректный ID карточки'));
+        next(new BadRequestError('Некорректный Id карточки'));
       } else {
         next(err);
       }
     });
 };
 
+// Функция изменения статуса лайка карточки
 const changeLikeCardStatus = (req, res, next, likeOtpions) => {
   const { cardId } = req.params;
+
   Card.findById(cardId)
     .then((card) => {
       if (!card) {
-        throw new NotFoundError('Передан несуществующий _id карточки');
+        throw new NotFoundError('Такой карточки нет');
       }
       return Card.findByIdAndUpdate(cardId, likeOtpions, { new: true })
         .then((cardForLike) => cardForLike.populate(['owner', 'likes']))
@@ -79,13 +83,14 @@ const changeLikeCardStatus = (req, res, next, likeOtpions) => {
     })
     .catch((err) => {
       if (err instanceof CastError) {
-        next(new BadRequestError('Переданы некорректные данные для постановки/снятии лайка'));
+        next(new BadRequestError('Некорректный Id карточки'));
       } else {
         next(err);
       }
     });
 };
 
+// Функция-декоратор постановки лайка карточки
 const likeCard = (req, res, next) => {
   const { _id: userId } = req.user;
   // добавить _id пользователя в массив, если его там нет
@@ -93,6 +98,7 @@ const likeCard = (req, res, next) => {
   changeLikeCardStatus(req, res, next, likeOptions);
 };
 
+// Функция-декоратор снятия лайка карточки
 const dislikeCard = (req, res, next) => {
   const { _id: userId } = req.user;
   const likeOptions = { $pull: { likes: userId } }; // убрать _id пользователя из массива

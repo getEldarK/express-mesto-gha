@@ -1,5 +1,5 @@
 /* eslint-disable eol-last */
-const { BAD_REQUEST_400 } = require('../utils/errors');
+const { BAD_REQUEST_400 } = require('../utils/constants');
 
 class BadRequestError extends Error {
   constructor(message) {

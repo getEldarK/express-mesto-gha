@@ -1,3 +1,5 @@
+/* eslint-disable eol-last */
+
 const rateLimit = require('express-rate-limit');
 
 const limiter = rateLimit({

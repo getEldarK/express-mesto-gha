@@ -1,12 +1,13 @@
 /* eslint-disable eol-last */
+// Импорт модуля jsonwebtoken
 const jwt = require('jsonwebtoken');
 
+// Импорт переменной секретного ключа
 const { JWT_SECRET } = require('../utils/config');
 
 const UnauthorizedError = require('../errors/UnauthorizedError');
 
 module.exports = (req, res, next) => {
-  // достаём авторизационный заголовок
   // извлечём токен и сохраняем его в переменную
   const token = req.cookies.jwt;
 

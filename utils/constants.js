@@ -1,3 +1,4 @@
+/* eslint-disable eol-last */
 const httpConstants = require('http2').constants;
 
 const {
@@ -22,4 +23,3 @@ module.exports = {
   CONFLICT_409,
   regEx,
 };
-/* eslint-disable eol-last */

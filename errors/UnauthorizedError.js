@@ -1,5 +1,5 @@
 /* eslint-disable eol-last */
-const { UNAUTHORIZED_401 } = require('../utils/errors');
+const { UNAUTHORIZED_401 } = require('../utils/constants');
 
 class UnauthorizedError extends Error {
   constructor(message) {
