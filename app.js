@@ -1,3 +1,4 @@
+/* eslint-disable eol-last */
 // Импорт модуля dotenv для добавления переменных окружения в process.env
 require('dotenv').config();
 
