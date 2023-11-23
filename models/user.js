@@ -26,7 +26,6 @@ const userSchema = new mongoose.Schema(
     password: {
       type: String,
       required: [true, 'не передан пароль пользователя'], // оно должно быть у каждого пользователя, так что пароль — обязательное поле
-      minlength: 8,
       select: false,
     },
     name: {
@@ -60,6 +59,7 @@ const userSchema = new mongoose.Schema(
 
 // добавим метод findUserByCredentials схеме пользователя
 // у него будет два параметра — почта и пароль
+// eslint-disable-next-line func-names
 userSchema.statics.findUserByCredentials = function (email, password) {
   // попытаемся найти пользователя по почте
   return this.findOne({ email }).select('+password') // this — это модель User
